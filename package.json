@@ -13,8 +13,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@tanstack/vue-query": "^5.49.1",
     "@vueuse/core": "^10.11.0",
+    "ant-design-vue": "4.x",
     "axios": "^1.7.2",
     "pinia": "^2.1.7",
     "vue": "^3.4.31",
