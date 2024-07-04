@@ -36,10 +36,12 @@
 </template>
 
 <script lang="ts">
-import { RouterLink } from 'vue-router'
+// import { RouterLink } from 'vue-router'
 import { Button } from 'ant-design-vue'
 import { LeftOutlined } from '@ant-design/icons-vue'
 import axios from 'axios'
+
+import { useApiKeyStore } from '@/stores/apiKeyStore'
 
 import SearchItem from '@/components/SearchItem.vue'
 
@@ -47,9 +49,14 @@ export default {
   name: 'SearchView',
   data() {
     return {
-      apiKey: '72b0fa580cebb312a5bf50b04b322b1c',
       value: '',
-      searchResults: []
+      searchResults: [] as {
+        city: string
+        country: string
+        state: string
+        lat: string
+        lon: string
+      }[]
     }
   },
   components: {
@@ -57,8 +64,14 @@ export default {
     LeftOutlined,
     SearchItem
   },
+  computed: {
+    apiKey() {
+      const store = useApiKeyStore()
+      return store.apiKey
+    }
+  },
   methods: {
-    async onSearch(value) {
+    async onSearch(value: string) {
       if (value.length >= 3) {
         try {
           const response = await axios.get(
@@ -68,23 +81,32 @@ export default {
           // console.log(response.data)
           const seenCoordinates = new Set()
           this.searchResults = []
-          response.data.forEach((location) => {
-            const lat = Math.round(location.lat, 2)
-            const lon = Math.round(location.lon, 2)
-            const coordinateKey = `${lat},${lon}`
+          response.data.forEach(
+            (location: {
+              lat: number
+              lon: number
+              name: string
+              country: string
+              state: string
+            }) => {
+              const lat = Math.round(location.lat)
+              const lon = Math.round(location.lon)
+              const coordinateKey = `${lat},${lon}`
 
-            if (!seenCoordinates.has(coordinateKey)) {
-              this.searchResults.push({
-                city: location.name, //result.local_names[result.country.toLowerCase()] ||
-                country: location.country,
-                state: location.state,
-                lat: location.lat.toString(),
-                lon: location.lon.toString()
-              })
-              seenCoordinates.add(coordinateKey)
+              if (!seenCoordinates.has(coordinateKey)) {
+                this.searchResults.push({
+                  city: location.name, //result.local_names[result.country.toLowerCase()] ||
+                  country: location.country,
+                  state: location.state,
+                  lat: location.lat.toString(),
+                  lon: location.lon.toString()
+                })
+                seenCoordinates.add(coordinateKey)
+              }
             }
-          })
+          )
         } catch (error) {
+          // @ts-ignore
           this.$message.error('Error fetching search results')
         }
       }

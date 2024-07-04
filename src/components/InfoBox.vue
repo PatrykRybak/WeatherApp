@@ -7,14 +7,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   name: 'InfoBox',
   props: {
     params: {
       type: Array,
       required: true,
-      validator(value) {
+      validator(value: any[]) {
         return value.every(
           (item) => typeof item.header === 'string' && typeof item.content === 'string'
         )
