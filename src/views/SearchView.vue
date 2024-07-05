@@ -22,7 +22,9 @@
       </div>
     </div>
     <div class="results" id="results">
+      <div v-if="noResults">No results found</div>
       <SearchItem
+        v-else
         v-for="result in searchResults"
         :key="`${result.city}-${result.state}-${result.country}`"
         :city="result.city"
@@ -42,6 +44,7 @@ import { LeftOutlined } from '@ant-design/icons-vue'
 import axios from 'axios'
 
 import { useApiKeyStore } from '@/stores/apiKeyStore'
+import { savedLocationsStore } from '@/stores/savedLocationsStore'
 
 import SearchItem from '@/components/SearchItem.vue'
 
@@ -56,7 +59,8 @@ export default {
         state: string
         lat: string
         lon: string
-      }[]
+      }[],
+      noResults: false
     }
   },
   components: {
@@ -68,6 +72,10 @@ export default {
     apiKey() {
       const store = useApiKeyStore()
       return store.apiKey
+    },
+    savedLocations() {
+      const store = savedLocationsStore()
+      return store.locations
     }
   },
   methods: {
@@ -78,33 +86,37 @@ export default {
             `http://api.openweathermap.org/geo/1.0/direct?q=${value}&limit=10&appid=${this.apiKey}`
           )
 
-          // console.log(response.data)
-          const seenCoordinates = new Set()
-          this.searchResults = []
-          response.data.forEach(
-            (location: {
-              lat: number
-              lon: number
-              name: string
-              country: string
-              state: string
-            }) => {
-              const lat = Math.round(location.lat)
-              const lon = Math.round(location.lon)
-              const coordinateKey = `${lat},${lon}`
+          if (response.data.length !== 0) {
+            this.noResults = false
+            const seenCoordinates = new Set()
+            this.searchResults = []
+            response.data.forEach(
+              (location: {
+                lat: number
+                lon: number
+                name: string
+                country: string
+                state: string
+              }) => {
+                const lat = Math.round(location.lat)
+                const lon = Math.round(location.lon)
+                const coordinateKey = `${lat},${lon}`
 
-              if (!seenCoordinates.has(coordinateKey)) {
-                this.searchResults.push({
-                  city: location.name, //result.local_names[result.country.toLowerCase()] ||
-                  country: location.country,
-                  state: location.state,
-                  lat: location.lat.toString(),
-                  lon: location.lon.toString()
-                })
-                seenCoordinates.add(coordinateKey)
+                if (!seenCoordinates.has(coordinateKey)) {
+                  this.searchResults.push({
+                    city: location.name, //result.local_names[result.country.toLowerCase()] ||
+                    country: location.country,
+                    state: location.state,
+                    lat: location.lat.toString(),
+                    lon: location.lon.toString()
+                  })
+                  seenCoordinates.add(coordinateKey)
+                }
               }
-            }
-          )
+            )
+          } else {
+            this.noResults = true
+          }
         } catch (error) {
           // @ts-ignore
           this.$message.error('Error fetching search results')
@@ -123,9 +135,9 @@ main {
   align-items: center;
   padding: 15px;
 }
-.top-bar {
-  postion: fixed;
-}
+/* .top-bar {
+  position: fixed;
+} */
 .navigation {
   width: 100%;
   display: flex;

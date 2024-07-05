@@ -30,7 +30,8 @@ export default {
   background-color: #f9f9f9;
   filter: drop-shadow(0 2px 1px rgb(0 0 0 / 0.05));
   border-radius: 10px;
-  padding: 17px;
+  padding: 15px;
+  margin-top: 5px;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;

@@ -1,8 +1,6 @@
 <template>
   <div class="weather-image-container">
-    <!-- {{ name }} -->
-    <a-skeleton-image v-if="loading || !imageUrl" />
-    <img v-else :alt="name" :src="imageUrl" class="weather-image" @load="onImageLoad" />
+    <img :alt="name" :src="imageUrl" class="weather-image" loading="lazy" />
   </div>
 </template>
 
@@ -19,7 +17,6 @@ export default defineComponent({
   },
   data() {
     return {
-      loading: true,
       imageUrl: ''
     }
   },
@@ -27,22 +24,8 @@ export default defineComponent({
     name: {
       immediate: true,
       handler(newName) {
-        this.loading = false
         this.imageUrl = `/weather/${newName}.png`
       }
-    }
-  },
-  methods: {
-    // updateImageUrl() {
-    //   if (this.name) {
-    //     this.imageUrl = `/weather/${this.name}.png`
-    //   } else {
-    //     this.imageUrl = ''
-    //   }
-    // },
-    onImageLoad() {
-      this.loading = false
-      console.log('Image loaded')
     }
   }
 })

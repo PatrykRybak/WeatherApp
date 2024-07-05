@@ -9,15 +9,8 @@ export default {
   name: 'WeatherApp',
   data() {
     return {
-      city: 'Białystok',
-      weather: 19,
-      icon: 'day_partial_cloud',
-      infoBoxData: [
-        { header: 'TIME', content: '21:37' },
-        { header: 'UV', content: '4' },
-        { header: 'RAIN', content: '58%' },
-        { header: 'AQ', content: '2' }
-      ],
+      location: null as null | { latitude: string; longitude: string },
+      error: null as null | string,
       activeKey: '1'
     }
   },
@@ -27,9 +20,44 @@ export default {
     WeatherView
   },
   methods: {
-    // handleClick(buttonName) {
-    //   this.$message.success(`${buttonName} clicked`)
-    // }
+    getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(this.successCallback, this.errorCallback)
+      } else {
+        // @ts-ignore
+        this.$message.error('Geolocation not supported')
+      }
+    },
+    successCallback(position: any) {
+      this.location = {
+        latitude: position.coords.latitude.toString(),
+        longitude: position.coords.longitude.toString()
+      }
+      this.error = null
+    },
+    errorCallback(error: any) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          // @ts-ignore
+          this.$message.error('User denied Geolocation')
+          break
+        case error.POSITION_UNAVAILABLE:
+          // @ts-ignore
+          this.$message.error('Location data unavailable')
+          break
+        case error.TIMEOUT:
+          // @ts-ignore
+          this.$message.error('User location request timed out')
+          break
+        case error.UNKNOWN_ERROR:
+          // @ts-ignore
+          this.$message.error('Unknown error')
+          break
+      }
+    }
+  },
+  mounted() {
+    this.getLocation()
   }
 }
 </script>
@@ -70,8 +98,16 @@ export default {
           </svg>
           <!-- Location -->
         </template>
-        <WeatherView
-      /></a-tab-pane>
+
+        <!-- <div v-if="error">{{ error }}</div>
+        <div v-if="location">
+          <p>Latitude: {{ location.latitude }}</p>
+          <p>Longitude: {{ location.longitude }}</p>
+        </div> -->
+
+        <WeatherView v-if="location" :lat="location.latitude" :lon="location.longitude" />
+        <WeatherView v-else />
+      </a-tab-pane>
       <a-tab-pane key="2" tab="Białystok"><WeatherView /></a-tab-pane>
       <a-tab-pane key="3" tab="Tokio"><WeatherView /></a-tab-pane>
     </a-tabs>
