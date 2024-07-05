@@ -5,6 +5,9 @@ import { LeftOutlined } from '@ant-design/icons-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 import { CloseOutlined } from '@ant-design/icons-vue'
 
+import { savedLocationsStore } from '@/stores/savedLocationsStore'
+import { currentWeatherStore } from '@/stores/currentWeatherStore'
+
 import WeatherView from '@/views/WeatherView.vue'
 
 export default {
@@ -27,15 +30,44 @@ export default {
     },
     lon() {
       return this.$route.query.lon
+    },
+    currentWeather() {
+      const store = currentWeatherStore()
+      return store.weather
     }
   },
   methods: {
+    checkIfInDrawer() {
+      console.log('checking')
+      const locationStore = savedLocationsStore()
+      this.alreadyAdded = false
+      if (this.lat && this.lon) {
+        if (locationStore.isInDrawer(this.currentWeather)) {
+          this.alreadyAdded = true
+        } else {
+          this.alreadyAdded = false
+        }
+      }
+    },
     addToDrawer() {
+      const locationStore = savedLocationsStore()
+      locationStore.addLocation(this.currentWeather)
       this.alreadyAdded = true
+      // @ts-ignore
+      this.$message.success('Saved!')
     },
     removeFromDrawer() {
+      const locationStore = savedLocationsStore()
+      locationStore.removeLocation(this.currentWeather)
       this.alreadyAdded = false
+      // @ts-ignore
+      this.$message.info('Removed from drawer')
     }
+  },
+  mounted() {
+    this.checkIfInDrawer()
+    console.log(this.alreadyAdded)
+    console.log(this.currentWeather)
   }
 }
 </script>
@@ -51,7 +83,7 @@ export default {
       <a-button v-if="!alreadyAdded" shape="circle" size="large" @click="addToDrawer">
         <PlusOutlined />
       </a-button>
-      <a-button v-if="alreadyAdded" danger shape="circle" size="large" @click="removeFromDrawer">
+      <a-button v-else danger shape="circle" size="large" @click="removeFromDrawer">
         <CloseOutlined />
       </a-button>
     </div>

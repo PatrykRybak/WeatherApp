@@ -3,7 +3,9 @@ import { defineComponent } from 'vue'
 import WeatherImage from '@/components/WeatherImage.vue'
 import InfoBox from '@/components/InfoBox.vue'
 import axios from 'axios'
+
 import { useApiKeyStore } from '@/stores/apiKeyStore'
+import { currentWeatherStore } from '@/stores/currentWeatherStore'
 
 export default defineComponent({
   name: 'WeatherApp',
@@ -25,14 +27,24 @@ export default defineComponent({
     apiKey() {
       const store = useApiKeyStore()
       return store.apiKey
+    },
+    currentWeather() {
+      const store = currentWeatherStore()
+      return store.weather
     }
   },
   props: {
+    name: {
+      type: String,
+      default: ''
+    },
     lat: {
-      type: String
+      type: String,
+      default: ''
     },
     lon: {
-      type: String
+      type: String,
+      default: ''
     }
   },
   components: {
@@ -58,6 +70,14 @@ export default defineComponent({
             response.data.sys.sunset * 1000
           ).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           this.infoBoxData[2].content = response.data.main.humidity + '%'
+
+          const store = currentWeatherStore()
+          store.setWeatherData({
+            name: this.city,
+            lat: this.lat,
+            lon: this.lon
+          })
+
           this.dataFetched = true
         })
         .catch((error) => {
@@ -81,12 +101,12 @@ export default defineComponent({
 
 <template>
   <main>
-    <a-skeleton-image v-if="!dataFetched" style="margin-bottom: 15px" />
+    <a-skeleton-image v-if="!dataFetched" style="margin-bottom: 30px" />
     <WeatherImage v-else :name="icon" />
 
     <a-skeleton-input
       v-if="!dataFetched"
-      style="width: 200px; margin-bottom: 15px"
+      style="width: 200px; margin-bottom: 30px"
       :active="active"
       size="small"
     />
@@ -95,7 +115,7 @@ export default defineComponent({
     </h2>
     <a-skeleton-avatar
       v-if="!dataFetched"
-      style="margin-bottom: 15px"
+      style="margin-bottom: 30px"
       :active="true"
       size="large"
       shape="circle"
@@ -104,6 +124,7 @@ export default defineComponent({
 
     <a-skeleton-input v-if="!dataFetched" :active="active" size="large" />
     <InfoBox v-else :params="infoBoxData" />
+    <!-- {{ lat }} {{ lon }} -->
   </main>
 </template>
 

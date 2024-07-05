@@ -15,10 +15,17 @@
         />
       </div>
       <div class="tags">
-        <!-- @close="log" -->
-        <a-tag closable color="#108ee9" :bordered="false">Białystok</a-tag>
-        <a-tag closable color="#108ee9" :bordered="false">New York</a-tag>
-        <a-tag closable color="#108ee9" :bordered="false">Tokio</a-tag>
+        <a-tag
+          v-for="location in savedLocations"
+          :key="`${location.name}-${location.lat}-${location.lon}`"
+          closable
+          color="#108ee9"
+          :bordered="false"
+          style="margin-top: 6px"
+          @close="updateLocations(location)"
+        >
+          {{ location.name }}
+        </a-tag>
       </div>
     </div>
     <div class="results" id="results">
@@ -38,7 +45,6 @@
 </template>
 
 <script lang="ts">
-// import { RouterLink } from 'vue-router'
 import { Button } from 'ant-design-vue'
 import { LeftOutlined } from '@ant-design/icons-vue'
 import axios from 'axios'
@@ -122,6 +128,13 @@ export default {
           this.$message.error('Error fetching search results')
         }
       }
+    },
+    updateLocations(location: { name: string; lat: string; lon: string }) {
+      const store = savedLocationsStore()
+
+      console.log(store.locations)
+
+      store.removeLocation(location)
     }
   }
 }
@@ -154,6 +167,8 @@ main {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+  text-align: center;
   padding: 15px;
   margin-bottom: 15px;
   border-bottom: 1px solid #e0e0e0;

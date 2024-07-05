@@ -3,6 +3,8 @@ import { RouterLink } from 'vue-router'
 import { Button } from 'ant-design-vue'
 import { SearchOutlined } from '@ant-design/icons-vue'
 
+import { savedLocationsStore } from '@/stores/savedLocationsStore'
+
 import WeatherView from '@/views/WeatherView.vue'
 
 export default {
@@ -11,7 +13,7 @@ export default {
     return {
       location: null as null | { latitude: string; longitude: string },
       error: null as null | string,
-      activeKey: '1'
+      activeKey: '0'
     }
   },
   components: {
@@ -56,6 +58,12 @@ export default {
       }
     }
   },
+  computed: {
+    savedLocations() {
+      const store = savedLocationsStore()
+      return store.locations
+    }
+  },
   mounted() {
     this.getLocation()
   }
@@ -71,20 +79,18 @@ export default {
         </a-button>
       </RouterLink>
     </div>
-    <a-tabs v-model:activeKey="activeKey" centered class="tabs">
-      <a-tab-pane key="1">
+    <a-tabs
+      v-model:activeKey="activeKey"
+      size="small"
+      centered
+      tabPosition="top"
+      class="tabs"
+      type="line"
+      :animated="true"
+      style="width: 100%"
+    >
+      <a-tab-pane key="0">
         <template #tab>
-          <!-- <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 384 512"
-            width="13"
-            height="13"
-            fill="currentColor"
-          >
-            <path
-              d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"
-            />
-          </svg> -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512"
@@ -108,8 +114,18 @@ export default {
         <WeatherView v-if="location" :lat="location.latitude" :lon="location.longitude" />
         <WeatherView v-else />
       </a-tab-pane>
-      <a-tab-pane key="2" tab="Białystok"><WeatherView /></a-tab-pane>
-      <a-tab-pane key="3" tab="Tokio"><WeatherView /></a-tab-pane>
+      <!-- <a-tab-pane v-for="(location, name) in savedLocations.locations" :key="name" :tab="name">
+        {{ name }}
+        <WeatherView v-if="location" :lat="location.lat" :lon="location.lon" />
+        <WeatherView v-else />
+      </a-tab-pane> -->
+      <a-tab-pane
+        v-for="i in Object.keys(savedLocations).length"
+        :key="i"
+        :tab="`${savedLocations[i - 1].name}`"
+      >
+        <WeatherView :lat="savedLocations[i - 1].lat" :lon="savedLocations[i - 1].lon" />
+      </a-tab-pane>
     </a-tabs>
   </main>
 </template>
@@ -120,12 +136,14 @@ main {
   flex-direction: column;
   align-items: center;
   padding: 15px;
+  overflow-x: hidden;
 }
 .toLeft {
   width: 100%;
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-bottom: 15px;
 }
 .tabs {
   width: 100%;

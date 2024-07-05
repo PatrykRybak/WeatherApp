@@ -27,3 +27,14 @@ body {
     border: none;
   }
 }
+
+/* @media (prefers-color-scheme: dark) {
+  body {
+    background-color: #121212;
+    color: #fff;
+  }
+  #app {
+    background-color: #000;
+    border-color: #fab;
+  }
+} */
