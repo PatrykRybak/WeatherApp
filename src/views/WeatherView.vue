@@ -79,6 +79,7 @@ export default defineComponent({
           })
 
           this.dataFetched = true
+          this.$emit('data-fetched', this.dataFetched)
         })
         .catch((error) => {
           console.log(error)

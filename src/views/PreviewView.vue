@@ -1,5 +1,4 @@
 <script lang="ts">
-import { RouterLink } from 'vue-router'
 import { Button } from 'ant-design-vue'
 import { LeftOutlined } from '@ant-design/icons-vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
@@ -37,7 +36,7 @@ export default {
     }
   },
   methods: {
-    checkIfInDrawer() {
+    checkIfInDrawer(dataFetched: boolean) {
       console.log('checking')
       const locationStore = savedLocationsStore()
       this.alreadyAdded = false
@@ -63,11 +62,6 @@ export default {
       // @ts-ignore
       this.$message.info('Removed from drawer')
     }
-  },
-  mounted() {
-    this.checkIfInDrawer()
-    console.log(this.alreadyAdded)
-    console.log(this.currentWeather)
   }
 }
 </script>
@@ -87,7 +81,7 @@ export default {
         <CloseOutlined />
       </a-button>
     </div>
-    <WeatherView :lat="String(lat)" :lon="String(lon)" />
+    <WeatherView :lat="String(lat)" :lon="String(lon)" @data-fetched="checkIfInDrawer" />
   </main>
 </template>
 

@@ -110,7 +110,7 @@ export default {
 
                 if (!seenCoordinates.has(coordinateKey)) {
                   this.searchResults.push({
-                    city: location.name, //result.local_names[result.country.toLowerCase()] ||
+                    city: location.name,
                     country: location.country,
                     state: location.state,
                     lat: location.lat.toString(),
@@ -148,9 +148,6 @@ main {
   align-items: center;
   padding: 15px;
 }
-/* .top-bar {
-  position: fixed;
-} */
 .navigation {
   width: 100%;
   display: flex;
