@@ -140,13 +140,16 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 main {
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 15px;
+}
+.top-bar {
+  width: 100%;
 }
 .navigation {
   width: 100%;
