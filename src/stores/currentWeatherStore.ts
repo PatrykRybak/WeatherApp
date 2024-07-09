@@ -11,9 +11,6 @@ export const currentWeatherStore = defineStore('currentWeatherStore', {
   actions: {
     setWeatherData(data: { name: string; lat: string; lon: string }) {
       this.weather = data
-    },
-    getWeatherData() {
-      return this.weather
     }
   }
 })

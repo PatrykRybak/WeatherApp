@@ -53,7 +53,8 @@ export default defineComponent({
   },
   methods: {
     async getWeather() {
-      // const weather =
+      console.log('REQUEST')
+
       await axios
         .get(
           `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${this.lat}&lon=${this.lon}&appid=${this.apiKey}`
@@ -93,8 +94,6 @@ export default defineComponent({
       this.getWeather()
     } else {
       this.dataFetched = false
-      // @ts-ignore
-      // this.$message.error('Error: bad weather data')
     }
   }
 })
@@ -105,26 +104,14 @@ export default defineComponent({
     <a-skeleton-image v-if="!dataFetched" style="margin-bottom: 30px" />
     <WeatherImage v-else :name="icon" />
 
-    <a-skeleton-input
-      v-if="!dataFetched"
-      style="width: 200px; margin-bottom: 30px"
-      :active="active"
-      size="small"
-    />
-    <h2 v-else @click="getWeather">
-      {{ city }}
-    </h2>
-    <a-skeleton-avatar
-      v-if="!dataFetched"
-      style="margin-bottom: 30px"
-      :active="true"
-      size="large"
-      shape="circle"
-    />
-    <h1 v-else @click="getWeather">{{ weather }}&deg;</h1>
+    <a-skeleton :active="active" :loading="!dataFetched">
+      <h2 @click="getWeather">
+        {{ city }}
+      </h2>
+      <h1 @click="getWeather">{{ weather }}&deg;</h1>
+      <InfoBox :params="infoBoxData" />
+    </a-skeleton>
 
-    <a-skeleton-input v-if="!dataFetched" :active="active" size="large" />
-    <InfoBox v-else :params="infoBoxData" />
     <!-- {{ lat }} {{ lon }} -->
   </main>
 </template>

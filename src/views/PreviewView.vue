@@ -37,7 +37,6 @@ export default {
   },
   methods: {
     checkIfInDrawer(dataFetched: boolean) {
-      console.log('checking')
       const locationStore = savedLocationsStore()
       this.alreadyAdded = false
       if (this.lat && this.lon) {
@@ -81,7 +80,9 @@ export default {
         <CloseOutlined />
       </a-button>
     </div>
-    <WeatherView :lat="String(lat)" :lon="String(lon)" @data-fetched="checkIfInDrawer" />
+    <KeepAlive>
+      <WeatherView :lat="String(lat)" :lon="String(lon)" @data-fetched="checkIfInDrawer" />
+    </KeepAlive>
   </main>
 </template>
 
